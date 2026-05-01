@@ -8,6 +8,6 @@ public class TestController {
 
     @GetMapping
     public String hello() {
-        return "Secured JWT API Working";
+        return "Secured JWT API Working. wow!";
     }
 }
