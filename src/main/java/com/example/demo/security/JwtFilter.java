@@ -1,41 +1,36 @@
-package com.example.demo.security;
+package com.example.demo.config;
 
+import com.example.demo.security.JwtService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.authority.AuthorityUtils;
 
 import java.io.IOException;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtFilter extends GenericFilter {
 
-    private final JwtService jwtService;
-
-    public JwtFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
+    @Autowired
+    private JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws ServletException, IOException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
+        HttpServletRequest req = (HttpServletRequest) request;
         String header = req.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            String user = jwtService.getUsername(token);
-
-            var auth = new UsernamePasswordAuthenticationToken(
-                    user, null, AuthorityUtils.NO_AUTHORITIES
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            try {
+                jwtService.validateToken(token);
+            } catch (Exception e) {
+                ((HttpServletResponse) response).sendError(401, "Invalid Token");
+                return;
+            }
         }
 
-        chain.doFilter(req, res);
+        chain.doFilter(request, response);
     }
 }

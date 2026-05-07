@@ -3,11 +3,11 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/api")
 public class TestController {
 
-    @GetMapping
-    public String hello() {
-        return "Secured JWT API Working. wow!";
+    @GetMapping("/test")
+    public String test() {
+        return "Secure API Working 🚀";
     }
 }
