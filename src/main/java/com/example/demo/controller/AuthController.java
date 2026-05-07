@@ -16,8 +16,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody AuthRequest request) {
-
-        // simple demo validation
         if ("admin".equals(request.getUsername()) &&
                 "password".equals(request.getPassword())) {
 
